@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#272522">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Specials Hub">
@@ -14,6 +14,11 @@
   <body>
     <section id="authScreen" class="auth-screen">
       <form id="authForm" class="auth-panel">
+        <div class="auth-logos" aria-label="Store brands">
+          <img src="assets/calliope-quality-meats.png" alt="Calliope Quality Meats">
+          <img src="assets/kin-kora-meats.png" alt="Kin Kora Meats">
+          <img src="assets/tannum-meats.png" alt="Tannum Meats">
+        </div>
         <p class="eyebrow">Private access</p>
         <h1 id="authTitle">Create login</h1>
         <p id="authHelp">Set the first login for this app on this device. Use the same login after restoring or syncing your data.</p>
@@ -37,9 +42,16 @@
 
     <div id="appShell" class="app-shell" hidden>
     <header class="app-header">
-      <div>
-        <p class="eyebrow">Purchasing database</p>
-        <h1>Butcher Specials Hub</h1>
+      <div class="brand-block">
+        <div class="brand-logos" aria-hidden="true">
+          <span><img src="assets/calliope-quality-meats.png" alt=""></span>
+          <span><img src="assets/kin-kora-meats.png" alt=""></span>
+          <span><img src="assets/tannum-meats.png" alt=""></span>
+        </div>
+        <div>
+          <p class="eyebrow">Purchasing database</p>
+          <h1>Butcher Specials Hub</h1>
+        </div>
       </div>
       <div class="header-actions">
         <span id="currentUser" class="status-pill">Not logged in</span>

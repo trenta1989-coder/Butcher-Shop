@@ -21,6 +21,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 [hidden] {
@@ -44,6 +45,7 @@ button,
   border-radius: 6px;
   cursor: pointer;
   font-weight: 700;
+  touch-action: manipulation;
 }
 
 button:hover,
@@ -72,6 +74,19 @@ button.secondary {
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.auth-logos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.auth-logos img {
+  width: 100%;
+  height: 72px;
+  object-fit: contain;
 }
 
 .auth-panel .eyebrow {
@@ -106,6 +121,35 @@ button.secondary {
   padding: 24px 32px;
   background: #272522;
   color: #fff;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.brand-logos {
+  display: flex;
+  gap: 6px;
+}
+
+.brand-logos span {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  padding: 4px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.brand-logos img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .eyebrow {
@@ -165,6 +209,13 @@ h2 {
   background: #fff;
   border-bottom: 1px solid var(--line);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
@@ -172,6 +223,7 @@ h2 {
   color: var(--ink);
   border: 1px solid transparent;
   white-space: nowrap;
+  scroll-snap-align: start;
 }
 
 .tab:hover,
@@ -243,6 +295,7 @@ textarea {
   padding: 9px 10px;
   background: #fff;
   color: var(--ink);
+  font-size: 16px;
 }
 
 .check-label {
@@ -292,6 +345,7 @@ textarea {
   border-radius: 8px;
   overflow: auto;
   box-shadow: var(--shadow);
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -400,6 +454,10 @@ th {
 }
 
 @media (max-width: 900px) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .app-header,
   .with-tools {
     align-items: stretch;
@@ -424,6 +482,145 @@ th {
   .tabs {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .app-header {
+    gap: 16px;
+    padding-top: calc(16px + env(safe-area-inset-top));
+    padding-bottom: 16px;
+  }
+
+  .brand-block {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .brand-logos {
+    width: 100%;
+  }
+
+  .brand-logos span {
+    width: 64px;
+    height: 56px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  h2 {
+    font-size: 21px;
+  }
+
+  .header-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .header-actions .status-pill {
+    grid-column: span 1;
+  }
+
+  .header-actions button,
+  .header-actions .file-action {
+    display: grid;
+    min-height: 48px;
+    place-items: center;
+    text-align: center;
+  }
+
+  .tabs {
+    position: sticky;
+    z-index: 20;
+    top: 0;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    box-shadow: 0 3px 12px rgba(32, 33, 36, 0.09);
+  }
+
+  .tab {
+    min-height: 44px;
+    padding: 9px 13px;
+  }
+
+  main {
+    padding-top: 18px;
+    padding-bottom: calc(36px + env(safe-area-inset-bottom));
+  }
+
+  .form-grid,
+  .result-form,
+  .supplier-form,
+  .invoice-form,
+  .cloud-form,
+  .account-form {
+    gap: 16px;
+    padding: 14px;
+  }
+
+  button,
+  .file-action,
+  input,
+  select {
+    min-height: 48px;
+  }
+
+  textarea {
+    min-height: 96px;
+  }
+
+  select[multiple] {
+    min-height: 150px;
+  }
+
+  .tool-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .tool-row button,
+  .tool-row input,
+  .tool-row select {
+    width: 100%;
+  }
+
+  .table-wrap {
+    margin-right: -16px;
+    margin-left: -16px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  th,
+  td {
+    padding: 12px 14px;
+  }
+
+  .sheet {
+    margin-right: -8px;
+    margin-left: -8px;
+    padding: 14px;
+  }
+
+  .sheet-title {
+    font-size: 24px;
+  }
+
+  .auth-screen {
+    align-items: start;
+    padding: calc(20px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .auth-panel {
+    padding: 20px 16px;
+  }
+
+  .auth-logos img {
+    height: 62px;
   }
 }
 

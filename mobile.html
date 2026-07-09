@@ -23,19 +23,28 @@
   <body>
     <p id="status">Opening Butcher Specials Hub...</p>
     <script>
-      const version = "20260709-3";
+      const version = "20260709-4";
       fetch(`index.html?mobile=${version}`, { cache: "no-store" })
         .then((response) => {
           if (!response.ok) throw new Error("The app could not be loaded.");
           return response.text();
         })
         .then((html) => {
+          const banner = `assets/store-logos.jpeg?v=${version}`;
           const versioned = html
+            .replace(
+              /<div class="auth-logos"[\s\S]*?<\/div>/,
+              `<div class="auth-logos" aria-label="Store brands" style="display:block"><img src="${banner}" alt="Tannum Meats, Kin Kora Meats and Calliope Quality Meats" style="display:block;width:100%;height:auto;max-height:104px;object-fit:contain"></div>`
+            )
+            .replace(
+              /<div class="brand-logos"[\s\S]*?<\/div>/,
+              `<div class="brand-logos" aria-hidden="true" style="display:block;width:min(320px,100%);padding:4px;background:#fff;border-radius:6px"><img src="${banner}" alt="" style="display:block;width:100%;height:auto;object-fit:contain"></div>`
+            )
             .replaceAll("assets/calliope-quality-meats.png", `assets/calliope-quality-meats.png?v=${version}`)
             .replaceAll("assets/kin-kora-meats.png", `assets/kin-kora-meats.png?v=${version}`)
             .replaceAll("assets/tannum-meats.png", `assets/tannum-meats.png?v=${version}`)
-            .replace('href="styles.css"', `href="styles.css?v=${version}"`)
-            .replace('src="app.js"', `src="app.js?v=${version}"`);
+            .replace('href="styles.css"', `href="styles.css?v=${version}`)
+            .replace('src="app.js"', `src="app.js?v=${version}`);
           document.open();
           document.write(versioned);
           document.close();

@@ -1,11 +1,14 @@
-const CACHE_NAME = "butcher-specials-hub-v3";
+const CACHE_NAME = "butcher-specials-hub-v4";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.webmanifest",
-  "./icon.svg"
+  "./icon.svg",
+  "./assets/calliope-quality-meats.png",
+  "./assets/kin-kora-meats.png",
+  "./assets/tannum-meats.png"
 ];
 
 self.addEventListener("install", (event) => {

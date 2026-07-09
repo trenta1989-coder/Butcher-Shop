@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#272522">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Specials Hub">
+    <title>Butcher Specials Hub</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <section id="authScreen" class="auth-screen">
+      <form id="authForm" class="auth-panel">
+        <p class="eyebrow">Private access</p>
+        <h1 id="authTitle">Create login</h1>
+        <p id="authHelp">Set the first login for this app on this device. Use the same login after restoring or syncing your data.</p>
+        <label>
+          Username
+          <input id="authUsername" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          Password
+          <input id="authPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <label id="authConfirmWrap">
+          Confirm password
+          <input id="authConfirmPassword" type="password" autocomplete="new-password">
+        </label>
+        <button id="authSubmit" type="submit">Create login</button>
+        <p id="authMessage" class="auth-message" aria-live="polite"></p>
+        <p class="auth-small">Keep a JSON backup. If you forget the password, restoring an older backup or clearing site data is the recovery path.</p>
+      </form>
+    </section>
+
+    <div id="appShell" class="app-shell" hidden>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Purchasing database</p>
+        <h1>Butcher Specials Hub</h1>
+      </div>
+      <div class="header-actions">
+        <span id="currentUser" class="status-pill">Not logged in</span>
+        <span id="cloudStatus" class="status-pill">Local only</span>
+        <button id="logoutBtn" type="button" class="secondary">Logout</button>
+        <button id="backupBtn" type="button">Backup JSON</button>
+        <label class="file-action">
+          Restore
+          <input id="restoreInput" type="file" accept="application/json">
+        </label>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Main sections">
+      <button class="tab active" type="button" data-view="entry">Add Special</button>
+      <button class="tab" type="button" data-view="specials">Specials</button>
+      <button class="tab" type="button" data-view="storeSheets">Store Sheets</button>
+      <button class="tab" type="button" data-view="performance">Store Results</button>
+      <button class="tab" type="button" data-view="suppliers">Suppliers</button>
+      <button class="tab" type="button" data-view="invoices">Invoices</button>
+      <button class="tab admin-only" type="button" data-view="accounts">Accounts</button>
+      <button class="tab" type="button" data-view="cloud">Cloud</button>
+    </nav>
+
+    <main>
+      <section id="entry" class="view active-view">
+        <div class="section-heading">
+          <h2>Add weekly special</h2>
+          <p>Enter one line per product special. GP is calculated as (sell - purchase) / sell.</p>
+        </div>
+
+        <form id="specialForm" class="form-grid">
+          <input type="hidden" id="editingId">
+          <label>
+            Week starting
+            <input id="weekStarting" type="date" required>
+          </label>
+          <label>
+            Product
+            <input id="productName" type="text" placeholder="Rump steak" required>
+          </label>
+          <label>
+            Cut / notes
+            <input id="cutNotes" type="text" placeholder="MSA, bulk buy, sliced free">
+          </label>
+          <label>
+            Supplier
+            <input id="supplierName" list="supplierList" type="text" placeholder="Supplier name" required>
+          </label>
+          <label>
+            Purchase price
+            <input id="purchasePrice" type="number" min="0" step="0.01" placeholder="9.50" required>
+          </label>
+          <label>
+            Sell price
+            <input id="sellPrice" type="number" min="0" step="0.01" placeholder="14.99" required>
+          </label>
+          <label>
+            Unit
+            <select id="unit">
+              <option value="kg">kg</option>
+              <option value="each">each</option>
+              <option value="tray">tray</option>
+              <option value="pack">pack</option>
+            </select>
+          </label>
+          <label>
+            Stores
+            <select id="stores" multiple size="3">
+              <option selected>Kingaroy Meats</option>
+              <option selected>Calliope Meats</option>
+              <option selected>Tannum Meats</option>
+            </select>
+          </label>
+          <label class="wide">
+            Promo wording for shop sheet
+            <input id="promoText" type="text" placeholder="This week's special">
+          </label>
+          <label class="wide">
+            Internal note
+            <textarea id="internalNote" rows="3" placeholder="Invoice number, supplier deal, quality notes, ordering reminder"></textarea>
+          </label>
+          <div class="form-summary" aria-live="polite">
+            <span>GP margin</span>
+            <strong id="gpPreview">0.0%</strong>
+          </div>
+          <div class="form-actions">
+            <button type="submit" id="saveSpecialBtn">Save special</button>
+            <button type="button" id="resetFormBtn" class="secondary">Clear</button>
+          </div>
+        </form>
+        <datalist id="supplierList"></datalist>
+      </section>
+
+      <section id="specials" class="view">
+        <div class="section-heading with-tools">
+          <div>
+            <h2>Specials database</h2>
+            <p>Filter, export, edit, or delete special lines.</p>
+          </div>
+          <div class="tool-row">
+            <input id="searchSpecials" type="search" placeholder="Search product, supplier, store">
+            <button id="exportSpecialsCsv" type="button">Export CSV</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Product</th>
+                <th>Supplier</th>
+                <th>Buy</th>
+                <th>Sell</th>
+                <th>GP</th>
+                <th>Stores</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="specialsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="storeSheets" class="view">
+        <div class="section-heading with-tools">
+          <div>
+            <h2>Weekly store sheets</h2>
+            <p>Choose a week and store, then print or export the sheet.</p>
+          </div>
+          <div class="tool-row">
+            <input id="sheetWeek" type="date">
+            <select id="sheetStore">
+              <option>All stores</option>
+              <option>Kingaroy Meats</option>
+              <option>Calliope Meats</option>
+              <option>Tannum Meats</option>
+            </select>
+            <button id="printSheet" type="button">Print</button>
+            <button id="exportSheetCsv" type="button">Export CSV</button>
+          </div>
+        </div>
+        <div id="printArea" class="sheet"></div>
+      </section>
+
+      <section id="performance" class="view">
+        <div class="section-heading">
+          <h2>Store results</h2>
+          <p>Log what each store sold so you can compare which specials worked.</p>
+        </div>
+        <form id="resultForm" class="result-form">
+          <label>
+            Special
+            <select id="resultSpecial"></select>
+          </label>
+          <label>
+            Store
+            <select id="resultStore">
+              <option>Kingaroy Meats</option>
+              <option>Calliope Meats</option>
+              <option>Tannum Meats</option>
+            </select>
+          </label>
+          <label>
+            Quantity sold
+            <input id="quantitySold" type="number" min="0" step="0.01" required>
+          </label>
+          <label>
+            Waste / markdown
+            <input id="wasteCost" type="number" min="0" step="0.01" value="0">
+          </label>
+          <label class="wide">
+            Result note
+            <input id="resultNote" type="text" placeholder="Sold out early, slow mover, needed better display">
+          </label>
+          <button type="submit">Save result</button>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Product</th>
+                <th>Store</th>
+                <th>Qty</th>
+                <th>Revenue</th>
+                <th>Est. GP $</th>
+                <th>Note</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="resultsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="suppliers" class="view">
+        <div class="section-heading">
+          <h2>Suppliers</h2>
+          <p>Quick reference list pulled from specials, with optional contact details.</p>
+        </div>
+        <form id="supplierForm" class="supplier-form">
+          <label>
+            Supplier
+            <input id="supplierRecordName" type="text" required>
+          </label>
+          <label>
+            Contact
+            <input id="supplierContact" type="text">
+          </label>
+          <label>
+            Phone / email
+            <input id="supplierPhone" type="text">
+          </label>
+          <label class="wide">
+            Notes
+            <input id="supplierNotes" type="text">
+          </label>
+          <button type="submit">Save supplier</button>
+        </form>
+        <div id="supplierCards" class="card-grid"></div>
+      </section>
+
+      <section id="invoices" class="view">
+        <div class="section-heading">
+          <h2>Invoice capture</h2>
+          <p>Attach invoice photos as a reminder, then enter the special lines from them. OCR can be added later.</p>
+        </div>
+        <form id="invoiceForm" class="invoice-form">
+          <label>
+            Supplier
+            <input id="invoiceSupplier" type="text" list="supplierList">
+          </label>
+          <label>
+            Invoice date
+            <input id="invoiceDate" type="date">
+          </label>
+          <label>
+            Invoice number
+            <input id="invoiceNumber" type="text">
+          </label>
+          <label>
+            Photo / PDF reference
+            <input id="invoiceFile" type="file" accept="image/*,.pdf">
+          </label>
+          <label class="wide">
+            Notes
+            <textarea id="invoiceNotes" rows="3" placeholder="Items to turn into specials, deal details, follow-up"></textarea>
+          </label>
+          <button type="submit">Save invoice note</button>
+        </form>
+        <div id="invoiceCards" class="card-grid"></div>
+      </section>
+
+      <section id="cloud" class="view">
+        <div class="section-heading">
+          <h2>Cloud sync</h2>
+          <p>Use a free Firebase Realtime Database URL so the same data is available on your phone and computer.</p>
+        </div>
+        <form id="cloudForm" class="cloud-form">
+          <label class="wide">
+            Firebase database URL
+            <input id="cloudUrl" type="url" placeholder="https://your-project-default-rtdb.asia-southeast1.firebasedatabase.app">
+          </label>
+          <label>
+            Database key
+            <input id="cloudKey" type="text" value="butcher-specials-hub">
+          </label>
+          <label class="check-label">
+            <input id="cloudAutoSync" type="checkbox">
+            Auto sync after saving
+          </label>
+          <div class="form-actions wide">
+            <button type="submit">Save cloud settings</button>
+            <button id="syncDownBtn" type="button" class="secondary">Sync from cloud</button>
+            <button id="syncUpBtn" type="button">Sync to cloud</button>
+          </div>
+        </form>
+        <div class="cloud-note">
+          <strong>Important:</strong> use Backup JSON before your first cloud sync. Sync from cloud replaces the local copy on this device.
+        </div>
+      </section>
+
+      <section id="accounts" class="view">
+        <div class="section-heading with-tools">
+          <div>
+            <h2>Accounts</h2>
+            <p>Create logins for store staff. Temporary passwords are shown once when generated.</p>
+          </div>
+          <button id="createStoreAccountsBtn" type="button">Create three store accounts</button>
+        </div>
+        <form id="accountForm" class="account-form">
+          <input id="accountEditingId" type="hidden">
+          <label>
+            Username
+            <input id="accountUsername" type="text" autocomplete="off" required>
+          </label>
+          <label>
+            Password
+            <input id="accountPassword" type="text" autocomplete="off" placeholder="Leave blank to generate">
+          </label>
+          <label>
+            Role
+            <select id="accountRole">
+              <option value="store">Store</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+          <label>
+            Store
+            <select id="accountStore">
+              <option value="">All stores</option>
+              <option>Kingaroy Meats</option>
+              <option>Calliope Meats</option>
+              <option>Tannum Meats</option>
+            </select>
+          </label>
+          <div class="form-actions wide">
+            <button id="saveAccountBtn" type="submit">Save account</button>
+            <button id="clearAccountBtn" type="button" class="secondary">Clear</button>
+          </div>
+        </form>
+        <div id="generatedPasswords" class="cloud-note" hidden></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Store</th>
+                <th>Created</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="accountsTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
